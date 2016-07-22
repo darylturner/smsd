@@ -1,8 +1,8 @@
 {
-    "device": {
-        "path": "/dev/tty.usbserial-142",
+    "modem": {
+        "device": "/dev/tty.usbserial-142",
         "baudrate": 115200,
-        "flowcontrol": true
+        "rtscts": true
     },
     "port": 8080,
     "user": "smsd",
