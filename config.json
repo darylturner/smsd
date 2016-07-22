@@ -1,0 +1,9 @@
+{
+    "device": {
+        "path": "/dev/cuau0",
+        "baudrate": 115200,
+        "flowcontrol": true
+    },
+    "port": 8080,
+    "user": "smsd"
+}
