@@ -41,7 +41,9 @@ var modem = {
         }
         this.locked = true;
         this.log.info('querying modem signal strength')
-        this.port.write('AT+CSQ\r', (err) => {
+        var cmd = 'AT+CSQ\r';
+        this.log.debug({sent: cmd});
+        this.port.write(cmd, (err) => {
             if (err) {
                 this.log.error(err);
                 return callback(err);
@@ -79,19 +81,19 @@ var modem = {
         }
         this.locked = true;
         this.log.info({sms: sms}, 'attempting to send message');
-        var command = `AT+CMGS=${sms.recipient}\r${sms.message}${String.fromCharCode(26)}`;
-        this.log.debug({sending: command});
-        this.port.write(command, (err) => {
+        var cmd = `AT+CMGS=${sms.recipient}\r`;
+        this.log.debug({sent: cmd});
+        this.port.write(cmd, (err) => {
             if (err) {
                 this.log.error(err, 'error on message write')
                 return callback(err);
             }
-            this.wait((err, buffer) => {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback();
-                }
+            this.wait(() => {
+                var cmd = `${sms.message}${String.fromCharCode(26)}`;
+                this.log.debug({sent: cmd});
+                this.port.write(cmd, () => {
+                    this.wait(callback);
+                });
             });
         });
     },
@@ -106,11 +108,16 @@ var modem = {
             self.log.debug({received: chunk.toString()})
             buffer += chunk;
             // search for message delimiter
-            if (buffer.search(/OK|ERROR/) !== -1) {
+            if (buffer.search(/OK|ERROR|>/) !== -1) {
                 var err;
                 if (buffer.search('ERROR') !== -1) {
                     err = new Error('modem error')
                     self.log.error(err);
+                }
+                if (buffer.match('>')) {
+                    // don't release lock.
+                    self.port.removeListener('data', parser);
+                    return callback();
                 }
                 self.port.removeListener('data', parser);
                 self.locked = false;
