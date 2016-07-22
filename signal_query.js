@@ -1,8 +1,8 @@
 var modem = require('./libsms')
 
 var wavecom = modem.create({
-    device: '/dev/cuau0', baudrate: 115200,
-    xon: true, xoff: true
+    device: '/dev/tty.usbserial-142', baudrate: 115200,
+    xon: false, xoff: false, rtscts: true
 })
 
 wavecom.connect((err) => {
