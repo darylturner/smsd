@@ -25,12 +25,7 @@ if (process.getuid() === 0) {
 // initalise message queues and modem objects
 var messageQueue = [];
 var messageLog = [];
-var modem = libsms.create({
-    device: config.device.path,
-    baudrate: config.device.baudrate,
-    xon: config.device.flowcontrol,
-    xoff: config.device.flowcontrol
-});
+var modem = libsms.create(config.modem);
 modem.log.level('error');
 
 // set up restify server and route handlers
