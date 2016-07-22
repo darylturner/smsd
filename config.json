@@ -1,9 +1,13 @@
 {
     "device": {
-        "path": "/dev/cuau0",
+        "path": "/dev/tty.usbserial-142",
         "baudrate": 115200,
         "flowcontrol": true
     },
     "port": 8080,
-    "user": "smsd"
+    "user": "smsd",
+    "max_queue": 100,
+    "message_retries": 3,
+    "log_size": 20,
+    "wake_interval": 30
 }

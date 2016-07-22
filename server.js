@@ -5,8 +5,9 @@ const uuid = require('uuid');
 const libsms = require('./libsms');
 
 // parse in configuration parameters
+var configFile = process.argv[2] || './config.json'
 try {
-    var config = JSON.parse(fs.readFileSync('/root/smsd/config.json'));
+    var config = JSON.parse(fs.readFileSync(configFile));
 } catch (err) {
     console.log('configuration file not found: ', err);
     process.exit(1);
@@ -46,7 +47,7 @@ server.get('/', (req, res, next) => {
     return next()
 });
 
-server.get('/sms/queue', (req, res, next) => {
+server.get('/api/sms/queue', (req, res, next) => {
     res.send({
         code: 'ok',
         queue: messageQueue
@@ -54,7 +55,7 @@ server.get('/sms/queue', (req, res, next) => {
     return next();
 });
 
-server.get('/log', (req, res, next) => {
+server.get('/api/sms/log', (req, res, next) => {
     res.send({
         code: 'ok',
         log: messageLog
@@ -62,7 +63,7 @@ server.get('/log', (req, res, next) => {
     return next();
 });
 
-server.get('/signal', (req, res, next) => {
+server.get('/api/modem/signal', (req, res, next) => {
     modem.signal((err, reply) => {
         if (err) {
             return next(err);
@@ -76,10 +77,15 @@ server.get('/signal', (req, res, next) => {
     });
 });
 
-server.post('/sms', (req, res, next) => {
+server.post('/api/sms', (req, res, next) => {
     var message = req.params;
     log.info({ message: message }, 'received request');
-    
+
+    if (messageQueue.length > config.max_queue) {
+        var err = new restify.TooManyRequestsError('message queue length greater than configured limit')
+        log.err(err);
+        return next(err);
+    }
     if (message.message.length > 160) {
         var err = new restify.BadRequestError('message too long');
         log.warn(err);
@@ -92,14 +98,14 @@ server.post('/sms', (req, res, next) => {
     }
 
     message.id = uuid.v4();
-    message.retries = 3;
+    message.retries = config.message_retries;
     message.status = 'pending';
     message.timestamp = new Date();
     messageQueue.push(message);
     res.send({
         code: 'ok',
         message: message.id
-    }); 
+    });
     return next();
 });
 
@@ -127,7 +133,7 @@ function senderLoop() {
                 message.status = 'sent';
                 messageLog.push(message);
             }
-            messageLog = messageLog.slice(-20);
+            messageLog = messageLog.slice(config.log_size * -1); //truncate log
 
             if (messageQueue.length > 0) {
                 return senderLoop();
@@ -147,7 +153,7 @@ modem.connect((err) => {
     log.info('modem ready');
     server.listen(config.port);
     log.info(`server listening on ${config.port}`);
-    setInterval(senderLoop, 5000); // wake senderLoop every 5 seconds.
+    setInterval(senderLoop, config.wake_interval * 1000); // wake senderLoop every 5 seconds.
 });
 
 process.on('SIGINT', () => {
@@ -156,6 +162,7 @@ process.on('SIGINT', () => {
         if (!err) {
             process.exit(0);
         } else {
+            log.err(err)
             process.exit(1);
         }
     });
