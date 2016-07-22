@@ -17,9 +17,11 @@ try {
 var log = bunyan.createLogger({name: 'smsd'});
 
 // drop privileges if running as root
-if (process.getuid() === 0) {
-    log.info('dropping privileges')
-    process.setuid(config.user);
+if (config.drop_priv) {
+    if (process.getuid() === 0) {
+        log.info('dropping privileges')
+        process.setuid(config.user);
+    }
 }
 
 // initalise message queues and modem objects

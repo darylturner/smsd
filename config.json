@@ -5,6 +5,7 @@
         "rtscts": true
     },
     "port": 8080,
+    "drop_priv": false, 
     "user": "smsd",
     "max_queue": 100,
     "message_retries": 3,
