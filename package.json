@@ -13,8 +13,8 @@
     "modem"
   ],
   "author": {
-      "name": "Daryl Turner",
-      "email": "daryl@layer-eight.uk"
+    "name": "Daryl Turner",
+    "email": "daryl@layer-eight.uk"
   },
   "homepage": "https://github.com/darylturner/smsd",
   "license": "ISC",
