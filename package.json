@@ -1,6 +1,6 @@
 {
   "name": "smsd",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Send SMS via REST API",
   "main": "server.js",
   "scripts": {
@@ -8,9 +8,15 @@
   },
   "keywords": [
     "sms",
-    "rest"
+    "rest",
+    "gsm",
+    "modem"
   ],
-  "author": "",
+  "author": {
+      "name": "Daryl Turner",
+      "email": "daryl@layer-eight.uk"
+  },
+  "homepage": "https://github.com/darylturner/smsd",
   "license": "ISC",
   "dependencies": {
     "restify": "^4.1.1",
