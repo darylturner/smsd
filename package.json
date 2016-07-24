@@ -12,6 +12,10 @@
     "gsm",
     "modem"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darylturner/smsd.git"
+  },
   "author": {
     "name": "Daryl Turner",
     "email": "daryl@layer-eight.uk"

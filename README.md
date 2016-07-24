@@ -10,7 +10,6 @@ REST API for sending SMS messages via locally attached GSM modem.
  - Message log.
 
 ## Routes
-
 **POST /api/sms**  
 Add message to server queue. Data should be a JSON object in the form:  
 ```json
@@ -90,6 +89,13 @@ If drop_priv is true the server will attempt to drop privileges to the specified
     "log_size": 20,
     "wake_interval": 30
 }
+```
+## Installation
+Requires Node.js and NPM.  
+```sh
+git clone https://github.com/darylturner/smsd.git
+cd smsd
+npm install --no-optional
 ```
 ## Startup  
 It's recommended to run the server under a service management system such as pm2 or supervisord.
