@@ -4,12 +4,12 @@ const EventEmitter = require('events');
 
 const modem = {
     create: function(options) {
-        var instance = Object.create(this);
+        const instance = Object.create(this);
         instance.emitter = new EventEmitter;
         instance.options = options;
         instance.options.autoOpen = false;
         instance.locked = false;
-        instance.log = new bunyan({
+        instance.log = bunyan.createLogger({
             name: 'sms',
             level: 'error'
         });
@@ -44,7 +44,7 @@ const modem = {
         }
         this.locked = true;
         this.log.info('querying modem signal strength')
-        var cmd = 'AT+CSQ\r';
+        const cmd = 'AT+CSQ\r';
         this.log.debug({sent: cmd});
         this.port.write(cmd, err => {
             if (err) {
@@ -58,7 +58,7 @@ const modem = {
                                  .split(':')[1].trim().split(',');
                     const rssi = parseInt(result.shift(), 10);
                     const ber = parseInt(result.shift(), 10);
-                    var status
+                    let status
                     if (rssi < 11) {
                         status = 'weak';
                     } else if (rssi > 10 & rssi < 32) {
@@ -105,7 +105,7 @@ const modem = {
         this.port.close(callback);
     },
     startDataHandler: function() {
-        var buffer = '';
+        let buffer = '';
         this.port.on('data', chunk => {
             this.log.debug({received: chunk.toString()})
             buffer += chunk;
