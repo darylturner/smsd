@@ -4,6 +4,7 @@
         "baudrate": 115200,
         "rtscts": true
     },
+    "enable_dashboard": true,
     "port": 8080,
     "drop_priv": false, 
     "user": "smsd",
