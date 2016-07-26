@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
         <script>
             const statusToCSS = {
-                pending: 'active',
+                pending: 'info',
                 sent: 'success',
                 retrying: 'warning',
                 failed: 'danger'
@@ -47,8 +47,11 @@
             }
 
             $(document).ready(function () {
-                loadQueue()
-                loadLog()
+                // may replace this with websocket notification
+                setInterval(() => {
+                    loadQueue()
+                    loadLog()
+                }, 10000)
 
                 $('form#messageForm').submit(function (event) {
                     event.preventDefault()
