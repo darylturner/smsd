@@ -80,7 +80,7 @@ server.post('/api/sms', (req, res, next) => {
 
   if (messageQueue.length > config.max_queue) {
     const err = new restify.TooManyRequestsError('message queue length greater than configured limit')
-    log.err(err)
+    log.error(err)
     return next(err)
   }
   if (message.message.length > 160) {
@@ -121,7 +121,7 @@ function senderLoop () {
           message.status = 'retrying'
           messageQueue.unshift(message)
         } else {
-          log.err('failed to send message. discarding')
+          log.error('failed to send message. discarding')
           message.status = 'failed'
           messageLog.push(message)
         }
@@ -159,7 +159,7 @@ process.on('SIGINT', () => {
     if (!err) {
       process.exit(0)
     } else {
-      log.err(err)
+      log.error(err)
       process.exit(1)
     }
   })
