@@ -7,6 +7,13 @@
         <script src="http://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
         <script>
+            const statusToCSS = {
+                pending: 'active',
+                sent: 'success',
+                retrying: 'warning',
+                failed: 'danger'
+            }
+            
             function loadQueue() {
                 $.ajax({
                     type: 'GET',
@@ -16,7 +23,7 @@
                     //refresh table
                     $('table#queue td').remove()
                     data.queue.forEach((val, i, arr) => {
-                        $('table#queue').append(`<tr><td>${val.recipient}</td><td>${val.message}</td></tr>`)
+                        $('table#queue').append(`<tr class=${statusToCSS[val.status]}><td>${val.recipient}</td><td>${val.message}</td></tr>`)
                     })
                 }).fail(function (jqXHR, textStatus, err) {
                     console.log(textStatus, err)
@@ -31,17 +38,18 @@
                 }).done(function (data, textStatus, jqXHR) {
                     //refresh table
                     $('table#log td').remove()
-                    data.queue.forEach((val, i, arr) => {
-                        $('table#log').append(`<tr><td>${val.recipient}</td><td>${val.message}</td><td>${val.status}</td></tr>`)
+                    data.log.forEach((val, i, arr) => {
+                        $('table#log').append(`<tr class=${statusToCSS[val.status]}><td>${val.recipient}</td><td>${val.message}</td><td>${val.status}</td></tr>`)
                     })
                 }).fail(function (jqXHR, textStatus, err) {
                     console.log(textStatus, err)
                 })
             }
 
-            loadQueue()
-            loadLog()
             $(document).ready(function () {
+                loadQueue()
+                loadLog()
+
                 $('form#messageForm').submit(function (event) {
                     event.preventDefault()
 
@@ -61,7 +69,7 @@
 
                     if (sms.message.length > 160) {
                         $('div#message').removeClass('has-success').addClass('has-error')
-                        return alert('number invalid')
+                        return alert('message is over 160 characters')
                     } else {
                         $('div#message').removeClass('has-error').addClass('has-success')
                     }
