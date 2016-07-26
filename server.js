@@ -46,13 +46,13 @@ server.get('/', (req, res, next) => {
 
 if (config.enable_dashboard) {
   const socketio = require('socket.io')
-  var dashboard = socketio.listen(server)
+  var dashboard = socketio.listen(server.server)
   server.get(/\/dashboard\/?.*/, restify.serveStatic({
     directory: __dirname,
     default: 'index.html'
   }))
 } else {
-    // null listener
+    // null emitter
     var dashboard = {
         emit: function(event, message) {
             return
