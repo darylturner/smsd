@@ -44,6 +44,22 @@ server.get('/', (req, res, next) => {
   return next()
 })
 
+if (config.enable_dashboard) {
+  const socketio = require('socket.io')
+  var dashboard = socketio.listen(server.server)
+  server.get(/\/dashboard\/?.*/, restify.serveStatic({
+    directory: __dirname,
+    default: 'index.html'
+  }))
+} else {
+    // null emitter
+    var dashboard = {
+        emit: function(event, message) {
+            return
+        }
+    }
+}
+
 server.get('/api/sms/queue', (req, res, next) => {
   res.send({
     code: 'ok',
@@ -99,6 +115,7 @@ server.post('/api/sms', (req, res, next) => {
   message.status = 'pending'
   message.timestamp = new Date()
   messageQueue.push(message)
+  dashboard.emit('refresh')
   res.send({
     code: 'ok',
     message: message.id
@@ -131,6 +148,7 @@ function senderLoop () {
         messageLog.push(message)
       }
       messageLog = messageLog.slice(config.log_size * -1) // truncate log
+      dashboard.emit('refresh')
 
       if (messageQueue.length > 0) {
         return senderLoop()
@@ -144,8 +162,8 @@ function senderLoop () {
 // once modem is succesfully connected start listening for requests
 modem.connect((err) => {
   if (err) {
-    modem.close()
-    throw err
+    log.error(err)
+    process.exit(1)
   }
   log.info('modem ready')
   server.listen(config.port)

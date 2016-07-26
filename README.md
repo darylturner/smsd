@@ -1,13 +1,16 @@
 # smsd
-REST API for sending SMS messages via locally attached GSM modem.  
+REST API for sending SMS messages via locally attached GSM modem. Written in Node.js.
 
 ## Features  
  - No Gammu requirement/setup needed.
+ - Optional dashboard for monitoring and sending messages.
  - Bunyan logging support.
  - Timerless modem control. Messages are sent when modem is ready.
  - User configurable input queue for buffering bursts of messages.
  - Signal status. Confirm signal strength when machine is in data centre.
  - Message log.
+
+![dashboard](dashboard.png "Dashboard screenshot")
 
 ## Routes
 **POST /api/sms**  
@@ -81,8 +84,9 @@ If drop_priv is true the server will attempt to drop privileges to the specified
         "baudrate": 115200,
         "rtscts": true
     },
+    "enable_dashboard": true,
     "port": 8080,
-    "drop_priv": true,
+    "drop_priv": false,
     "user": "smsd",
     "max_queue": 100,
     "message_retries": 3,
