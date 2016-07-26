@@ -44,6 +44,11 @@ server.get('/', (req, res, next) => {
   return next()
 })
 
+server.get(/\/dashboard\/?.*/, restify.serveStatic({
+  directory: __dirname,
+  default: 'index.html'
+}))
+
 server.get('/api/sms/queue', (req, res, next) => {
   res.send({
     code: 'ok',
