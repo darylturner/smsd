@@ -44,20 +44,21 @@ server.get('/', (req, res, next) => {
   return next()
 })
 
+var dashboard
 if (config.enable_dashboard) {
   const socketio = require('socket.io')
-  var dashboard = socketio.listen(server.server)
+  dashboard = socketio.listen(server.server)
   server.get(/\/dashboard\/?.*/, restify.serveStatic({
     directory: __dirname,
     default: 'index.html'
   }))
 } else {
-    // null emitter
-    var dashboard = {
-        emit: function(event, message) {
-            return
-        }
+  // null emitter
+  dashboard = {
+    emit: function (event, message) {
+      return
     }
+  }
 }
 
 server.get('/api/sms/queue', (req, res, next) => {
